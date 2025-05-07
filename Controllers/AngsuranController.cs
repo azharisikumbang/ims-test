@@ -17,7 +17,7 @@ namespace IMSTest.Controllers
         // GET: Bayar
         public async Task<IActionResult> Bayar(int id)
         {
-            var angsuran = await _context.Angsuran.Include(a => a.Kontrak).FirstOrDefaultAsync(a => a.Id == id);
+            var angsuran = await _context.Angsuran.Include(a => a.Kontrak).FirstOrDefaultAsync(a => a.Id == id && !a.Paid);
             if (angsuran == null) return NotFound();
 
             var form = new BayarAngsuranForm
@@ -39,7 +39,7 @@ namespace IMSTest.Controllers
         [HttpPost]
         public async Task<IActionResult> Bayar(BayarAngsuranForm form)
         {
-            var angsuran = await _context.Angsuran.Include(a => a.Kontrak).FirstOrDefaultAsync(a => a.Id == form.Id);
+            var angsuran = await _context.Angsuran.Include(a => a.Kontrak).FirstOrDefaultAsync(a => a.Id == form.Id && !a.Paid);
             if (angsuran == null) return NotFound();
 
             form.KontrakNo = angsuran.Kontrak.KontrakNo;
