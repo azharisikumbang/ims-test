@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using IMSTest.Data;
 using IMSTest.Models;
+using System.Text.RegularExpressions;
 
 namespace IMSTest.Controllers
 {
@@ -52,7 +53,13 @@ namespace IMSTest.Controllers
         {
             if (!ModelState.IsValid) return View(form);
 
+            // get kontrak no
+            var latestKontrak = await _context.Kontrak.OrderByDescending(k => k.Id).FirstOrDefaultAsync();
+            var kontrakNo = latestKontrak == null ? "0" : Regex.Match(latestKontrak.KontrakNo, @"\d+").Value;
+            kontrakNo = "ARG" + (int.Parse(kontrakNo) + 1).ToString("D5");
+
             Kontrak kontrak = new() {
+                KontrakNo = kontrakNo,
                 ClientName = form.ClientName,
                 OTR = form.OTR,
             };
@@ -97,13 +104,8 @@ namespace IMSTest.Controllers
         }
 
         // GET: Kontrak/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var kontrak = await _context.Kontrak.FindAsync(id);
             if (kontrak == null)
             {
@@ -148,13 +150,8 @@ namespace IMSTest.Controllers
         }
 
         // GET: Kontrak/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var kontrak = await _context.Kontrak.FindAsync(id);
             if (kontrak == null)
             {
@@ -167,7 +164,7 @@ namespace IMSTest.Controllers
         // POST: Kontrak/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var kontrak = await _context.Kontrak.FindAsync(id);
             if (kontrak != null)
