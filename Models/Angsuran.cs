@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace IMSTest.Models;
@@ -16,4 +17,8 @@ public class Angsuran
 
     [Required]
     public Kontrak Kontrak { get; set; } = new();
+
+    [Required]
+    [DisplayName("Lunas")]
+    public bool Paid { get; set; } = false;
 }

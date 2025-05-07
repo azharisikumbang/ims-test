@@ -39,6 +39,7 @@
                 <th>Angsuran Ke</th>
                 <th>Angsuran Per Bulan</th>
                 <th>Tanggal Jatuh Tempo</th>
+                <th>Status Lunas</th>
             </tr>
         </thead>
         <tbody>
@@ -49,6 +50,16 @@
                     <td>@item.AngsuranKe</td>
                     <td>@item.AngsuranPerBulan.ToString("C").Replace(",00", string.Empty)</td>
                     <td>@item.TanggalJatuhTempo.ToString("yyyy-MM-dd")</td>
+                    <td>
+                    @if (!item.Paid) 
+                    {
+                        <span class="text-danger">Belum Lunas |</span>
+                        <a asp-controller="Angsuran" asp-action="Bayar" asp-route-id="@item.Id">Bayar</a>
+                    } else 
+                    {
+                        <span class="text-success">Lunas</span>
+                    }
+                    </td>
                 </tr>
             }
         </tbody>
