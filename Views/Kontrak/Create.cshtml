@@ -1,0 +1,64 @@
+@model IMSTest.Models.KontrakForm
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Kontrak</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-2">
+                <label asp-for="TanggalMulaiKontrak" class="control-label"></label>
+                <input asp-for="TanggalMulaiKontrak" class="form-control" type="date" />
+                <span asp-validation-for="TanggalMulaiKontrak" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="ClientName" class="control-label"></label>
+                <input asp-for="ClientName" class="form-control" />
+                <span asp-validation-for="ClientName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="Brand" class="control-label"></label>
+                <input asp-for="Brand" class="form-control" />
+                <span asp-validation-for="Brand" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="OTR" class="control-label"></label>
+                <input asp-for="OTR" class="form-control" min="0" />
+                <span asp-validation-for="OTR" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="Tenor" class="control-label"></label>
+                <input asp-for="Tenor" class="form-control" min="0" />
+                <span asp-validation-for="Tenor" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mb-2">
+                <label asp-for="DownPayment" class="control-label"></label>
+                <input asp-for="DownPayment" class="form-control"  min="0" max="100" />
+                <span asp-validation-for="DownPayment" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="TanggalJatuhTempoBulanan" class="control-label"></label>
+                <input asp-for="TanggalJatuhTempoBulanan" class="form-control" />
+                <span asp-validation-for="TanggalJatuhTempoBulanan" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
