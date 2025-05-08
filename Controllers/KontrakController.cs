@@ -8,16 +8,19 @@ using Microsoft.EntityFrameworkCore;
 using IMSTest.Data;
 using IMSTest.Models;
 using System.Text.RegularExpressions;
+using IMSTest.Services;
 
 namespace IMSTest.Controllers
 {
     public class KontrakController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly KontrakService _kontrakService;
 
         public KontrakController(AppDbContext context)
         {
             _context = context;
+            _kontrakService = new KontrakService(context);
         }
 
         // GET: Kontrak
@@ -54,9 +57,7 @@ namespace IMSTest.Controllers
             if (!ModelState.IsValid) return View(form);
 
             // get kontrak no
-            var latestKontrak = await _context.Kontrak.OrderByDescending(k => k.Id).FirstOrDefaultAsync();
-            var kontrakNo = latestKontrak == null ? "0" : Regex.Match(latestKontrak.KontrakNo, @"\d+").Value;
-            kontrakNo = "ARG" + (int.Parse(kontrakNo) + 1).ToString("D5");
+            var kontrakNo = await _kontrakService.GenerateNewKontrakNo();
 
             Kontrak kontrak = new() {
                 KontrakNo = kontrakNo,
@@ -64,40 +65,7 @@ namespace IMSTest.Controllers
                 OTR = form.OTR,
             };
 
-            decimal DownPayment = Math.Round(form.OTR * form.DownPayment / 100, 0);
-            decimal PokokUtang = kontrak.OTR - DownPayment;
-            decimal Bunga;
-
-            if (form.Tenor <= 12)
-            {
-                Bunga = (decimal) 0.12 * PokokUtang;
-            }
-            else if (form.Tenor > 12 && form.Tenor <= 24)
-            {
-                Bunga = (decimal) 0.14 * PokokUtang;
-            }
-            else
-            {
-                Bunga = (decimal) 0.165 * PokokUtang;
-            }
-
-            decimal AngsuranPerBulan = Math.Round((PokokUtang + Bunga) / form.Tenor);
-
-            for (int i = 1; i <= form.Tenor; i++)
-            {
-                DateTime TanggalJatuhTempo = new DateTime(form.TanggalMulaiKontrak.Year, form.TanggalMulaiKontrak.Month, form.TanggalJatuhTempoBulanan).AddMonths(i - 1);
-
-                Angsuran angsuran = new Angsuran() {
-                    AngsuranKe = i,
-                    AngsuranPerBulan = AngsuranPerBulan,
-                    TanggalJatuhTempo = TanggalJatuhTempo
-                };
-
-                kontrak.ListAngsuran.Add(angsuran);   
-            }
-
-            _context.Add(kontrak);
-            await _context.SaveChangesAsync();
+            await _kontrakService.CreateKontrakAsync(kontrak, form);
 
             return RedirectToAction(nameof(Index));
 
